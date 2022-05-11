@@ -33,8 +33,6 @@
 
 <script>
 
-    import {postRequest} from "../utils/api";
-
     export default {
         name: "Login",
         data() {
@@ -61,7 +59,7 @@
             subLogin() {
                 this.$refs.loginForm.validate((valid)=>{
                     if(valid){
-                        postRequest('/login',this.loginForm).then(resp=>{
+                        this.postRequest('/login',this.loginForm).then(resp=>{
                             if(resp){
                                 //存储用户token
                                 const tokenStr = resp.obj.tokenHead+resp.obj.token;
