@@ -3,14 +3,14 @@
         <el-container>
             <el-header class="homeHeader">
                 <div class="title">云E办</div>
-                <el-dropdown>
-                    <span class="el-dropdown-link">
-                        {{user.name}}<i class="el-icon-arrow-down el-icon--right"></i>
+                <el-dropdown @command="handleCommand">
+                    <span class="el-dropdown-link" >
+                        {{user}}<i class="el-icon-arrow-down el-icon--right"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item>黄金糕</el-dropdown-item>
-                        <el-dropdown-item>狮子头</el-dropdown-item>
-                        <el-dropdown-item>螺蛳粉</el-dropdown-item>
+                        <el-dropdown-item command="a">个人中心</el-dropdown-item>
+                        <el-dropdown-item command="b">设置</el-dropdown-item>
+                        <el-dropdown-item command="logout">注销登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </el-header>
@@ -30,7 +30,14 @@
                 </el-aside>
                 <el-container>
                     <el-main>
-                        <router-view/>
+                        <el-breadcrumb v-if="this.$router.currentRoute.path!='/home'">
+                            <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+                            <el-breadcrumb-item>{{this.$router.currentRoute.name}}</el-breadcrumb-item>
+                        </el-breadcrumb>
+                        <div v-if="this.$router.currentRoute.path=='/home'">
+                            <img src="../assets/timg1.jpg"  width="100%" height="100%">
+                        </div>
+                        <router-view class="homeRouterView"/>
                     </el-main>
                     <el-footer>Footer</el-footer>
                 </el-container>
@@ -44,7 +51,8 @@
         name: "Home",
         data(){
             return{
-                user: JSON.parse(window.sessionStorage.getItem('user'))
+                user:"测试",
+                // user: JSON.parse(window.sessionStorage.getItem('user'))
             }
         },
         computed:{
@@ -53,12 +61,34 @@
             }
         },
         methods:{
-            // selectMenu(index){
-            //     this.$router.push(index);
-            //
-            // }
+            handleCommand(command){
+                //this.$message('click on item ' + command);
+                if(command=='logout'){
+                        this.$confirm('此操作将退出系统, 是否继续?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            //注销登录
+                            this.postRequest('/logout');
+                            //清空用户信息
+                            window.sessionStorage.removeItem('tokenStr');
+                            window.sessionStorage.removeItem('user');
+                            //清空菜单
+                            this.$store.commit('initRoutes',[]);
+                            //页面跳转
+                            this.$router.replace('/')
+                        }).catch(() => {
+                            this.$message({
+                                type: 'info',
+                                message: '取消注销'
+                            });
+                        });
+                    }
+
+                }
+            }
         }
-    }
 </script>
 
 <style>
@@ -74,6 +104,9 @@
         font-size:30px;
         font-family: 华文行楷;
         color: white;
+    }
+    .homeRouterView{
+        margin-top:10px
     }
 
 </style>
