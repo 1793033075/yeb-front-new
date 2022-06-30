@@ -12,37 +12,39 @@ import {putRequest} from "@/utils/api";
 import {deleteRequest} from "@/utils/api";
 
 Vue.prototype.getRequest = getRequest;
-Vue.prototype.postRequest=postRequest;
-Vue.prototype.putRequest=putRequest;
-Vue.prototype.deleteRequest=deleteRequest;
+Vue.prototype.postRequest = postRequest;
+Vue.prototype.putRequest = putRequest;
+Vue.prototype.deleteRequest = deleteRequest;
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
 
 //导航守卫
-router.beforeEach((to,from,next)=>{
-  if(window.sessionStorage.getItem('tokenStr')){
-    initMenu(router,store);
-    if(!window/sessionStorage.getItem('user')){
-      //判断用户信息是否存在
-      return this.getRequest('/admin/info').then(resp=>{
-        if(resp){
-          //存入用户信息
-          window.sessionStorage.setItem('user',JSON.toString(resp));
-          next();
+router.beforeEach((to, from, next) => {
+    if (window.sessionStorage.getItem('tokenStr')) {
+        initMenu(router, store);
+        if (!window.sessionStorage.getItem('user')) {
+            //判断用户信息是否存在
+            return getRequest('/admin/info').then(resp => {
+                if (resp) {
+                    //存入用户信息
+                    window.sessionStorage.setItem('user', JSON.stringify(resp));
+                    next();
+                }
+            })
         }
-      })
+        next()
+    } else {
+        if (to.path === '/') {
+            next();
+        } else {
+            next('/?redirect=' + to.path)
+        }
     }
-    next()
-  }else{
-    if(to.path=='/'){
-      next();
-    }
-  }
 });
 
 new Vue({
-  router,
-  store,
-  render: h => h(App)
+    router,
+    store,
+    render: h => h(App)
 }).$mount('#app');
