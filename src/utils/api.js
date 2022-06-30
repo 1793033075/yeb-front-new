@@ -20,11 +20,11 @@ axios.interceptors.response.use(success => {
 
         //success.data.code == 500 || success.data.code == 401 || success.data.code = 403
         if (success.data.code == 500 || success.data.code == 401 || success.data.code == 403) {
-            Message.error({message: success.data.msg})
+            Message.error({message: success.data.message})
             return;
         }
-        if (success.data.msg) {
-            Message.success({message: success.data.msg})
+        if (success.data.message) {
+            Message.success({message: success.data.message})
         }
     }
     return success.data;

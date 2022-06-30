@@ -11,7 +11,7 @@
         >
             <h3 class="loginTitle">系统登录</h3>
             <el-form-item prop="username">
-                <el-input type="text" v-model="loginForm.username" placeholder="请输入用户名"></el-input>
+                <el-input type="text" v-model="loginForm.username" placeholder="请输入用户名1"></el-input>
             </el-form-item>
 
 
@@ -64,8 +64,11 @@
                                 //存储用户token
                                 const tokenStr = resp.obj.tokenHead+resp.obj.token;
                                 window.sessionStorage.setItem('tokenStr',tokenStr);
-                                //跳转首页
-                                this.$router.replace('/home')
+                                //跳转页面
+                                let path = this.$route.query.redirect;
+                                alert(path);
+                                this.$router.replace((path === '/' || path === undefined) ? '/home' : path);
+                                //this.$router.replace("/home");
                             }
                         })
                     }else{
