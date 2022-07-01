@@ -66,7 +66,7 @@
                                 window.sessionStorage.setItem('tokenStr',tokenStr);
                                 //跳转页面
                                 let path = this.$route.query.redirect;
-                                alert(path);
+                                //alert(path);
                                 this.$router.replace((path === '/' || path === undefined) ? '/home' : path);
                                 //this.$router.replace("/home");
                             }

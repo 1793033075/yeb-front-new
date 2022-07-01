@@ -38,7 +38,7 @@
                         <div class="homeWelcome" v-if="this.$router.currentRoute.path==='/home'">
                             欢迎来到云e办系统
                         </div>
-                        <router-view/>
+                        <router-view class="homeRouterView"/>
                     </el-main>
                     <el-footer>Footer</el-footer>
                 </el-container>
@@ -110,6 +110,9 @@
         font-family: 华文行楷;
         color: mediumslateblue;
         padding-top: 100px;
+    }
+    .homeRouterView{
+        margin-top: 18px;
     }
 
 </style>
