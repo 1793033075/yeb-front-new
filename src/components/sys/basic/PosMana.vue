@@ -17,11 +17,11 @@
                     :data="positions"
                     stripe
                     border
+                    @selection-change="handleSelectionChange"
                     style="width: 70%">
                 <el-table-column
                         type="selection"
                         width="55">
-
                 </el-table-column>
                 <el-table-column
                         prop="id"
@@ -59,6 +59,7 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <el-button size="small" style="margin-top: 80px" type="danger" :disabled="this.multipleSelection.length===0" @click="deleteByBatch">批量删除</el-button>
             <el-dialog
                     title="编辑职位"
                     :visible.sync="dialogVisible"
@@ -88,7 +89,8 @@
                     name: ''
                 },
                 positions: [],
-                dialogVisible: false
+                dialogVisible: false,
+                multipleSelection:[],
             }
         },
         mounted() {
@@ -101,6 +103,28 @@
                         this.positions = resp
                     }
                 })
+            },
+            deleteByBatch(){
+                this.$confirm('此操作将永久删除[' + this.multipleSelection.length + ']条信息, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let ids='?';
+                    this.multipleSelection.forEach(item=>{
+                        ids+='ids='+item.id+'&';
+                    });
+                    this.deleteRequest('/system/config/pos/'+ids ).then(resp => {
+                        if (resp) {
+                            this.initPositions();
+                        }
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
             },
             addPositions() {
                 if (this.pos.name) {
@@ -115,7 +139,7 @@
                 }
             },
             showEditView(index, data) {
-                Object.assign(this.updatePos,data)
+                Object.assign(this.updatePos,data);
                 //this.updatePos = data;
                 this.updatePos.createDate='';
                 this.dialogVisible = true;
@@ -137,7 +161,6 @@
                         message: '已取消删除'
                     });
                 });
-
             },
             doUpdate() {
                 this.putRequest('/system/config/pos/update', this.updatePos).then(resp => {
@@ -146,8 +169,10 @@
                         this.dialogVisible = false;
                     }
                 })
-
-            }
+            },
+            handleSelectionChange(val){
+                this.multipleSelection=val;
+            },
         },
     }
 </script>
