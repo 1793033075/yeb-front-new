@@ -2,14 +2,15 @@
     <div>
         <el-container>
             <el-header class="homeHeader">
-                <div class="title">云E办</div>
-                <el-dropdown @command="handleCommand">
-                    <span class="el-dropdown-link" >
-                        {{user}}<i class="el-icon-arrow-down el-icon--right"></i>
+                <div class="title">云e办</div>
+                <el-dropdown @command="commandHandler">
+                    <span class="el-dropdown-link">
+                       {{this.user.name}}
+                        <i class="el-icon-arrow-down el-icon--right"></i>
                     </span>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item command="a">个人中心</el-dropdown-item>
-                        <el-dropdown-item command="b">设置</el-dropdown-item>
+                    <el-dropdown-menu slot="dropdown" >
+                        <el-dropdown-item command="userinfo">个人中心</el-dropdown-item>
+                        <el-dropdown-item command="setting">设置</el-dropdown-item>
                         <el-dropdown-item command="logout">注销登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -30,12 +31,12 @@
                 </el-aside>
                 <el-container>
                     <el-main>
-                        <el-breadcrumb v-if="this.$router.currentRoute.path!='/home'">
+                        <el-breadcrumb v-if="this.$router.currentRoute.path!=='/home'" >
                             <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
                             <el-breadcrumb-item>{{this.$router.currentRoute.name}}</el-breadcrumb-item>
                         </el-breadcrumb>
-                        <div v-if="this.$router.currentRoute.path=='/home'">
-                            <img src="../assets/timg1.jpg"  width="100%" height="100%">
+                        <div class="homeWelcome" v-if="this.$router.currentRoute.path==='/home'">
+                            欢迎来到云e办系统
                         </div>
                         <router-view class="homeRouterView"/>
                     </el-main>
@@ -51,8 +52,7 @@
         name: "Home",
         data(){
             return{
-                user:"测试",
-                // user: JSON.parse(window.sessionStorage.getItem('user'))
+                user: JSON.parse(window.sessionStorage.getItem('user'))
             }
         },
         computed:{
@@ -61,34 +61,33 @@
             }
         },
         methods:{
-            handleCommand(command){
-                //this.$message('click on item ' + command);
-                if(command=='logout'){
-                        this.$confirm('此操作将退出系统, 是否继续?', '提示', {
-                            confirmButtonText: '确定',
-                            cancelButtonText: '取消',
-                            type: 'warning'
-                        }).then(() => {
-                            //注销登录
-                            this.postRequest('/logout');
-                            //清空用户信息
-                            window.sessionStorage.removeItem('tokenStr');
-                            window.sessionStorage.removeItem('user');
-                            //清空菜单
-                            this.$store.commit('initRoutes',[]);
-                            //页面跳转
-                            this.$router.replace('/')
-                        }).catch(() => {
-                            this.$message({
-                                type: 'info',
-                                message: '取消注销'
-                            });
-                        });
-                    }
+          commandHandler(command){
+              if(command==='logout'){
+                  this.$confirm('此操作将退出系统，是否继续','提示',{
+                      confirmButtonText:'确定',
+                      cancelButtonText:'取消',
+                      type:'warning'
+                  }).then(()=>{
+                      //注销登录
+                      this.postRequest('/logout');
+                      //清空用户信息
+                      window.sessionStorage.removeItem('tokenStr');
+                      window.sessionStorage.removeItem('user');
+                      //清除菜单信息
+                      this.$store.commit('initRoutes',[]);
+                      //跳转到登录页
+                      this.$router.replace('/')
+                  }).catch(()=>{
+                      this.$message({
+                          type:'info',
+                          message:'取消删除'
+                      });
+                  });
 
-                }
-            }
+              }
+          }
         }
+    }
 </script>
 
 <style>
@@ -105,8 +104,15 @@
         font-family: 华文行楷;
         color: white;
     }
+    .homeWelcome{
+        text-align: center;
+        font-size:100px;
+        font-family: 华文行楷;
+        color: mediumslateblue;
+        padding-top: 100px;
+    }
     .homeRouterView{
-        margin-top:10px
+        margin-top: 18px;
     }
 
 </style>

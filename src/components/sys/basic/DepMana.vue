@@ -1,6 +1,6 @@
 <template>
     <div>
-        职称管理
+        部门管理123
     </div>
 </template>
 

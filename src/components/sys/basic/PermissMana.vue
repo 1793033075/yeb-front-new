@@ -1,12 +1,12 @@
 <template>
     <div>
-        奖惩规则
+        权限组
     </div>
 </template>
 
 <script>
     export default {
-        name: "EcMana"
+        name: "PermissMana"
     }
 </script>
 

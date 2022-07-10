@@ -11,7 +11,7 @@
         >
             <h3 class="loginTitle">系统登录</h3>
             <el-form-item prop="username">
-                <el-input type="text" v-model="loginForm.username" placeholder="请输入用户名"></el-input>
+                <el-input type="text" v-model="loginForm.username" placeholder="请输入用户名1"></el-input>
             </el-form-item>
 
 
@@ -46,7 +46,7 @@
                 loading:false,
                 checked: true,
                 rules: {
-                    username: [{required: true, message: '请输入用户名', trigger: 'blur'},],
+                    username: [{required: true, message: '请输入用户名!', trigger: 'blur'},],
                     password: [{required: true, message: '请输入密码', trigger: 'blur'}],
                     code: [{required: true, message: '请输入验证码', trigger: 'blur'}]
                 }
@@ -64,10 +64,11 @@
                                 //存储用户token
                                 const tokenStr = resp.obj.tokenHead+resp.obj.token;
                                 window.sessionStorage.setItem('tokenStr',tokenStr);
-                                //页面跳转
+                                //跳转页面
                                 let path = this.$route.query.redirect;
-
-                                this.$router.replace(path == '/' || path == undefined ? '/home' : path)
+                                //alert(path);
+                                this.$router.replace((path === '/' || path === undefined) ? '/home' : path);
+                                //this.$router.replace("/home");
                             }
                         })
                     }else{
