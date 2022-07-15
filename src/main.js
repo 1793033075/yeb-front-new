@@ -17,7 +17,7 @@ Vue.prototype.putRequest = putRequest;
 Vue.prototype.deleteRequest = deleteRequest;
 
 Vue.config.productionTip = false;
-Vue.use(ElementUI);
+Vue.use(ElementUI,{size:'small'});
 
 //导航守卫
 router.beforeEach((to, from, next) => {
