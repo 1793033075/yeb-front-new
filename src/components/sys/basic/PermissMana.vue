@@ -7,8 +7,8 @@
             <el-input placeholder="请输入中文名..." v-model="roles.nameZh" size="small"></el-input>
             <el-button size="small" type="primary" icon="el-icon-plus">添加角色</el-button>
         </div>
-        <div class="permissManaMain">
-            <el-collapse accordion @change="change">
+        <div class="permissManaMain" style="width: 70%">
+            <el-collapse v-model="activeName" accordion @change="change">
                 <el-collapse-item :title="role.nameZh" :name="role.id" v-for="(role,index) in roles" :key="index">
                     <el-card class="box-card">
                         <div slot="header" class="clearfix">
@@ -21,12 +21,15 @@
                             <el-tree show-checkbox
                                      :data="allMenus"
                                      :props="defaultProps"
+                                     ref="tree"
                                      :default-checked-keys="selectedMenus"
                                      node-key="id">
                             </el-tree>
                             <div style="display: flex;justify-content: flex-end">
+<!--                                关闭-->
                                 <el-button type="info" icon="el-icon-close" circle size="mini" style="margin-right: 20px"></el-button>
-                                <el-button type="success" icon="el-icon-check" circle size="mini"></el-button>
+<!--                                确认-->
+                                <el-button type="success" icon="el-icon-check" circle size="mini" @click="doUpdate(role.id,index)"></el-button>
                             </div>
                         </div>
                     </el-card>
@@ -50,16 +53,32 @@
                 defaultProps: {
                     children: 'children',
                     label: 'name'
-                }
+                },
+                activeName:-1
             }
         },
         mounted() {
             this.initRoles()
         },
         methods: {
+            doUpdate(rid,index){
+                console.log(rid)
+                let tree=this.$refs.tree[index];
+                let selectedKeys=tree.getCheckedKeys(true);
+                let url='/system/config/permission/rolemenu/?rid='+rid;
+                selectedKeys.forEach(key=>{
+                    url+= '&mids='+key
+                });
+                this.putRequest(url).then(resp=>{
+                    if(resp){
+                        this.initRoles();
+                        this.activeName=-1;
+                    }
+                })
+            },
             change(rid) {
                 if (rid) {
-                    this.initAllMenus()
+                    this.initAllMenus();
                     this.initSelectedMenus(rid)
                 }
             },
