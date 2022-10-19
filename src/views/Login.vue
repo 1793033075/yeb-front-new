@@ -7,8 +7,7 @@
                   v-loading="loading"
                   element-loading-text="正在登录"
                   element-loading-spinner="el-icon-loading"
-                  element-loading-background="rgba(0, 0, 0, 0.8)"
-        >
+                  element-loading-background="rgba(0, 0, 0, 0.8)">
             <h3 class="loginTitle">系统登录</h3>
             <el-form-item prop="username">
                 <el-input type="text" v-model="loginForm.username" placeholder="请输入用户名1"></el-input>

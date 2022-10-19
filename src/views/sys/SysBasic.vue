@@ -23,7 +23,7 @@
         name: "SysBasic",
         data() {
             return {
-                activeName: 'JoblebelMana'
+                activeName: 'PermissMana'
             }
         },
         components:{
