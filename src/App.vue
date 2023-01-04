@@ -4,5 +4,6 @@
   </div>
 </template>
 
-<style>
+<style lang="less">
+  @import "./font-style/font.css";
 </style>
