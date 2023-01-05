@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-container>
+        <el-container style="width:100%; border: 1px solid #eee">
             <el-header class="homeHeader">
                 <div class="title">云e办</div>
                 <el-dropdown @command="commandHandler">
