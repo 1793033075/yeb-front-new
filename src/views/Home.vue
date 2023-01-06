@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-container style="width:100%; border: 1px solid #eee">
+        <el-container style="height:100vh;width: 100%; border: 1px solid #eee">
             <el-header class="homeHeader">
                 <div class="title">云e办</div>
                 <el-dropdown @command="commandHandler">
@@ -16,7 +16,7 @@
                 </el-dropdown>
             </el-header>
             <el-container>
-                <el-aside width="200px">
+                <el-aside width="200px" >
                     <el-menu router unique-opened>
                         <template v-for="(item,index) in routes">
                             <el-submenu :index="index+''" :key="index" v-if="!item.hidden">
@@ -39,7 +39,9 @@
                         </el-breadcrumb>
                         <div class="homeWelcome" v-if="this.$router.currentRoute.path==='/home'">
                             <img class="img" src="../assets/bg.jpg"/>
-                            <span class="text" style="text-align: center">欢迎来到云e办系统</span>
+                            <div style="margin: auto">
+                                <span class="text">欢迎来到云e办系统</span>
+                            </div>
                         </div>
                         <router-view class="homeRouterView"/>
                     </el-main>
@@ -145,7 +147,9 @@
         /*z-index: 2;!*置于顶层*!*/
         font-size: 100px;
         font-family: 华文行楷;
-        padding-top: 100px;
+        top:100px;
+        left:50%;
+        margin-left:-416.6px;
     }
 
     .homeRouterView {

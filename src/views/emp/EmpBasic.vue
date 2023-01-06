@@ -28,6 +28,7 @@
                     :data="emps"
                     stripe
                     border
+                    height="70vh"
                     v-loading="loading"
                     element-loading-text="加载中"
                     element-loading-spinner="el-icon-loading"
@@ -204,11 +205,12 @@
                 width="80%">
             <hr style="color: lightgray;">
             <div>
-                <el-form ref="empForm" :model="emp">
+                <el-form ref="empForm" :model="emp" :rules="rules">
                     <el-row>
                         <el-col :span="6">
                             <el-form-item label="姓名:" prop="name">
-                                <el-input v-model="emp.name" placeholder="请输入姓名" prefix-icon="el-icon-edit" size="mini" style="width: 150px"></el-input>
+                                <el-input v-model="emp.name" placeholder="请输入姓名" prefix-icon="el-icon-edit" size="mini"
+                                          style="width: 150px"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="5">
@@ -259,17 +261,20 @@
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="籍贯:" prop="nativePlace">
-                                <el-input v-model="emp.nativePlace" placeholder="请输入籍贯" prefix-icon="el-icon-edit" size="mini" style="width: 150px"></el-input>
+                                <el-input v-model="emp.nativePlace" placeholder="请输入籍贯" prefix-icon="el-icon-edit"
+                                          size="mini" style="width: 150px"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="电子邮箱:" prop="email">
-                                <el-input v-model="emp.email" placeholder="请输入电子邮箱" prefix-icon="el-icon-message" size="mini" style="width: 150px"></el-input>
+                                <el-input v-model="emp.email" placeholder="请输入电子邮箱" prefix-icon="el-icon-message"
+                                          size="mini" style="width: 150px"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="联系地址:" prop="address">
-                                <el-input v-model="emp.address" placeholder="请输入联系地址" prefix-icon="el-icon-edit" size="mini" style="width: 200px"></el-input>
+                                <el-input v-model="emp.address" placeholder="请输入联系地址" prefix-icon="el-icon-edit"
+                                          size="mini" style="width: 200px"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -299,32 +304,43 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
-                            <el-form-item label="部门:" prop="departmentId">
-                                <el-select v-model="emp.departmentId" size="mini" style="width: 150px" placeholder="请选择">
-                                    <el-option
-                                            v-for="item in options"
-                                            :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value">
-                                    </el-option>
-                                </el-select>
+                            <el-form-item label="所属部门:" prop="departmentId">
+                                <el-popover
+                                        placement="bottom"
+                                        title="请选择部门"
+                                        width="250"
+                                        trigger="manual"
+                                        v-model="visible">
+                                    <el-tree
+                                            default-expand-all
+                                            :data="allDeps"
+                                            :props="defaultProps"
+                                            @node-click="handleNodeClick"></el-tree>
+                                    <div slot="reference"
+                                         style="width: 150px; height: 24px;border-radius:5px;display: inline-flex;border: 1px solid;color: #dedede;cursor: pointer;align-items: center;font-size: 10px;padding-left: 8px;box-sizing: border-box"
+                                         @click="showDepView">{{inputdepName}}
+                                    </div>
+                                </el-popover>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
-                            <el-form-item label="电话号码:" prop="departmentId">
-                                <el-input v-model="emp.phone" placeholder="请输入电话号码" prefix-icon="el-icon-phone" size="mini" style="width: 150px"></el-input>
+                            <el-form-item label="电话号码:" prop="phone">
+                                <el-input v-model="emp.phone" placeholder="请输入电话号码" prefix-icon="el-icon-phone"
+                                          size="mini" style="width: 150px"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row>
                         <el-col :span="6">
-                            <el-form-item label="工号:" prop="workID" >
-                                <el-input v-model="emp.workID" placeholder="请输入工号" prefix-icon="el-icon-edit" size="mini" style="width: 150px" disabled></el-input>
+                            <el-form-item label="工号:" prop="workID">
+                                <el-input v-model="emp.workID" placeholder="请输入工号" prefix-icon="el-icon-edit"
+                                          size="mini" style="width: 150px" disabled></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="学历:" prop="tiptopDegree">
-                                <el-select v-model="emp.tiptopDegree" size="mini" style="width: 150px" placeholder="请选择">
+                                <el-select v-model="emp.tiptopDegree" size="mini" style="width: 150px"
+                                           placeholder="请选择">
                                     <el-option
                                             v-for="item in tiptopdigreesDict"
                                             :key="item"
@@ -336,12 +352,14 @@
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="毕业院校:" prop="school">
-                                <el-input v-model="emp.school" placeholder="请输入学校" prefix-icon="el-icon-edit" size="mini" style="width: 150px"></el-input>
+                                <el-input v-model="emp.school" placeholder="请输入学校" prefix-icon="el-icon-edit"
+                                          size="mini" style="width: 150px"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="专业名称:" prop="specialty">
-                                <el-input v-model="emp.specialty" placeholder="请输入专业名称" prefix-icon="el-icon-edit" size="mini" style="width: 150px"></el-input>
+                                <el-input v-model="emp.specialty" placeholder="请输入专业名称" prefix-icon="el-icon-edit"
+                                          size="mini" style="width: 150px"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -371,9 +389,9 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
-                            <el-form-item label="合同起始日期" prop="conversionTime">
+                            <el-form-item label="合同起始日期" prop="beginContract">
                                 <el-date-picker
-                                        v-model="emp.conversionTime"
+                                        v-model="emp.beginContract"
                                         type="date"
                                         size="mini"
                                         style="width: 150px"
@@ -398,7 +416,8 @@
                     <el-row>
                         <el-col :span=8>
                             <el-form-item label="身份证号码:" prop="idCard">
-                                <el-input v-model="emp.idCard" placeholder="请输入身份证号码" prefix-icon="el-icon-edit" size="mini" style="width: 150px"></el-input>
+                                <el-input v-model="emp.idCard" placeholder="请输入身份证号码" prefix-icon="el-icon-edit"
+                                          size="mini" style="width: 150px"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span=8>
@@ -410,7 +429,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span=8>
-                            <el-form-item label="婚姻状况:" prop="wedlock" >
+                            <el-form-item label="婚姻状况:" prop="wedlock">
                                 <el-radio-group style="margin-top: 10px">
                                     <el-radio label="已婚">已婚</el-radio>
                                     <el-radio label="未婚">未婚</el-radio>
@@ -423,7 +442,7 @@
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+                <el-button type="primary" @click="addEmp">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -434,14 +453,21 @@
         name: "Empbasic",
         data() {
             return {
+                defaultProps: {
+                    children: 'children',
+                    label: 'name'
+                },
+                inputdepName: '',
+                allDeps: [],
                 emps: [],
-                nationsDict:[],
-                jobLevelDict:[],
-                politicsstatusDict:[],
-                positionsDict:[],
-                tiptopdigreesDict:['博士','硕士','本科','大专','高中','初中','小学','其他'],
+                nationsDict: [],
+                jobLevelDict: [],
+                politicsstatusDict: [],
+                positionsDict: [],
+                tiptopdigreesDict: ['博士', '硕士', '本科', '大专', '高中', '初中', '小学', '其他'],
                 loading: false,
-                dialogVisible:false,
+                visible: false,
+                dialogVisible: false,
                 emp: {
                     name: '',
                     gender: '',
@@ -472,10 +498,41 @@
                     workAge: null,
                     salaryId: null
                 },
+                rules:{
+                    name:[{required: true,message:'请输入员工姓名',tragger:'blur'}],
+                    gender:[{required: true,message:'请选择性别',tragger:'blur'}],
+                    birthday:[{required: true,message:'请输入出生日期',tragger:'blur'}],
+                    idCard:[{required: true,message:'请输入身份证号',tragger:'blur'}],
+                    wedlock:[{required: true,message:'请输入婚姻状况',tragger:'blur'}],
+                    nationId:[{required: true,message:'请输入民族',tragger:'blur'}],
+                    nativePlace:[{required: true,message:'请输入籍贯',tragger:'blur'}],
+                    politicId:[{required: true,message:'请输入政治面貌',tragger:'blur'}],
+                    email:[{required: true,message:'请输入邮箱地址',tragger:'blur'}],
+                    phone:[{required: true,message:'请输入员工电话',tragger:'blur'}],
+                    address:[{required: true,message:'请输入联系地址',tragger:'blur'}],
+                    departmentId:[{required: true,message:'请输入部门名称',tragger:'blur'}],
+                    jobLevelId:[{required: true,message:'请输入职称',tragger:'blur'}],
+                    posId:[{required: true,message:'请输入员工姓名',tragger:'blur'}],
+                    engageForm: [{required: true,message:'请输入毕业院校',tragger:'blur'}],
+                    tiptopDegree: [{required: true,message:'请输入最高学历',tragger:'blur'}],
+                    specialty: [{required: true,message:'请输入专业名称',tragger:'blur'}],
+                    school: [{required: true,message:'请输入毕业院校',tragger:'blur'}],
+                    beginDate: [{required: true,message:'请输入转正日期',tragger:'blur'}],
+                    workState: [{required: true,message:'请输入员工姓名',tragger:'blur'}],
+                    workID: [{required: true,message:'请输入员工姓名',tragger:'blur'}],
+                    contractTerm:[{required: true,message:'请输入员工姓名',tragger:'blur'}],
+                    conversionTime: [{required: true,message:'请输入员工姓名',tragger:'blur'}],
+                    notWorkDate: [{required: true,message:'请输入员工姓名',tragger:'blur'}],
+                    beginContract: [{required: true,message:'请输入合同起始日期',tragger:'blur'}],
+                    endContract: [{required: true,message:'请输入合同终止日期',tragger:'blur'}],
+                    workAge: [{required: true,message:'请输入员工姓名',tragger:'blur'}],
+                    salaryId: [{required: true,message:'请输入员工姓名',tragger:'blur'}],
+                },
                 empName: '',
                 currentPage: 1,
                 total: 0,
-                size: 10
+                size: 10,
+
             }
         },
         mounted() {
@@ -483,46 +540,77 @@
             this.initData()
         },
         methods: {
-            getWorkId(){
-                this.getRequest('/employee/basic/maxWorkID').then(resp=>{
-                    this.emp.workID=resp.obj
+            addEmp() {
+                this.$refs.empForm.validate((valid)=>{
+                    if(valid){
+                        this.postRequest('/employee/basic/', this.emp).then(resp => {
+                            if (resp) {
+                                this.dialogVisible = false;
+                                this.initEmps()
+                            }
+                        })
+                    }else{
+                        this.$message.error("请输入所有字段");
+                        return false;
+                    }
                 })
             },
-            initPositions(){
-                this.getRequest('/employee/basic/positions').then(resp=>{
-                    this.positionsDict=resp
+            handleNodeClick(data) {
+                this.emp.departmentId = data.id;
+                this.inputdepName = data.name;
+                this.visible = !this.visible;
+            },
+            showDepView() {
+                this.visible = !this.visible;
+            },
+            getWorkId() {
+                this.getRequest('/employee/basic/maxWorkID').then(resp => {
+                    this.emp.workID = resp.obj
                 })
             },
-            initData(){
-                if(!window.sessionStorage.getItem('nations')){
-                    this.getRequest('/employee/basic/nations').then(resp=>{
-                        if(resp){
-                            this.nationsDict=resp;
-                            window.sessionStorage.setItem('nations',JSON.stringify(resp))
-                        }
+            initPositions() {
+                this.getRequest('/employee/basic/positions').then(resp => {
+                    this.positionsDict = resp
+                })
+            },
+            initData() {
+                if (!window.sessionStorage.getItem('deps')) {
+                    this.getRequest('/employee/basic/departments').then(resp => {
+                        this.allDeps = resp;
+                        window.sessionStorage.setItem('alldeps', JSON.stringify(resp))
                     })
-                }else{
-                    this.nationsDict=JSON.parse(window.sessionStorage.getItem('nations'))
+                } else {
+                    this.allDeps = JSON.parse(window.sessionStorage.getItem('alldeps'))
                 }
-                if(!window.sessionStorage.getItem('joblevels')){
-                    this.getRequest('/employee/basic/jobLevels').then(resp=>{
-                        if(resp){
-                            this.jobLevelDict=resp;
-                            window.sessionStorage.setItem('joblevels',JSON.stringify(resp))
+                if (!window.sessionStorage.getItem('nations')) {
+                    this.getRequest('/employee/basic/nations').then(resp => {
+                        if (resp) {
+                            this.nationsDict = resp;
+                            window.sessionStorage.setItem('nations', JSON.stringify(resp))
                         }
                     })
-                }else{
-                    this.jobLevelDict=JSON.parse(window.sessionStorage.getItem('joblevels'))
+                } else {
+                    this.nationsDict = JSON.parse(window.sessionStorage.getItem('nations'))
                 }
-                if(!window.sessionStorage.getItem('politicStatus')){
-                    this.getRequest('/employee/basic/politicStatus').then(resp=>{
-                        if(resp){
-                            this.politicsstatusDict=resp;
-                            window.sessionStorage.setItem('politicStatus',JSON.stringify(resp))
+                if (!window.sessionStorage.getItem('joblevels')) {
+                    this.getRequest('/employee/basic/jobLevels').then(resp => {
+                        if (resp) {
+                            this.jobLevelDict = resp;
+                            window.sessionStorage.setItem('joblevels', JSON.stringify(resp))
                         }
                     })
-                }else{
-                    this.politicsstatusDict=JSON.parse(window.sessionStorage.getItem('politicStatus'))
+                } else {
+                    this.jobLevelDict = JSON.parse(window.sessionStorage.getItem('joblevels'))
+                }
+                if (!window.sessionStorage.getItem('politicStatus')) {
+                    this.getRequest('/employee/basic/politicStatus').then(resp => {
+                        if (resp) {
+                            this.politicsstatusDict = resp;
+                            window.sessionStorage.setItem('politicStatus', JSON.stringify(resp))
+                        }
+                    })
+                } else {
+                    this.politicsstatusDict = JSON.parse(window.sessionStorage.getItem('politicStatus'))
                 }
             },
             initEmps() {
@@ -536,10 +624,10 @@
                 })
             },
             //弹出框
-            showDiglog(){
+            showDiglog() {
                 this.getWorkId();
                 this.initPositions();
-                this.dialogVisible=true
+                this.dialogVisible = true
             },
             // 分页相关
             handleSizeChange(val) {
