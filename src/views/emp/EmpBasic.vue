@@ -20,7 +20,7 @@
                     <i class="fa fa-level-down" aria-hidden="true"></i>
                     导出数据
                 </el-button>
-                <el-button type="primary" icon="el-icon-plus" @click="showDiglog">添加员工</el-button>
+                <el-button type="primary" icon="el-icon-plus" @click="showEmpView">添加员工</el-button>
             </div>
         </div>
         <div>
@@ -179,10 +179,13 @@
                         align="center"
                         fixed="right"
                         width="200">
-                    <template>
-                        <el-button style="padding: 5px" size="mini" type="primary">查看</el-button>
+                    <template slot-scope="scope">
+                        <el-button @click="showEditEmpView(scope.row)" style="padding: 5px" size="mini" type="primary">
+                            编辑
+                        </el-button>
                         <el-button style="padding: 5px" size="mini" type="primary">查看高级资料</el-button>
-                        <el-button style="padding: 5px" size="mini" type="danger">删除</el-button>
+                        <el-button @click="delEmp(scope.row)" style="padding: 5px" size="mini" type="danger">删除
+                        </el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -200,7 +203,7 @@
             </div>
         </div>
         <el-dialog
-                title="添加员工"
+                :title="title"
                 :visible.sync="dialogVisible"
                 width="80%">
             <hr style="color: lightgray;">
@@ -317,7 +320,7 @@
                                             :props="defaultProps"
                                             @node-click="handleNodeClick"></el-tree>
                                     <div slot="reference"
-                                         style="width: 150px; height: 24px;border-radius:5px;display: inline-flex;border: 1px solid;color: #dedede;cursor: pointer;align-items: center;font-size: 10px;padding-left: 8px;box-sizing: border-box"
+                                         style="width: 150px; height: 24px;border-radius:5px;display: inline-flex;border: 1px solid;color: #dedede;cursor: pointer;align-items: center;font-size: 10px; padding-left: 8px;box-sizing: border-box"
                                          @click="showDepView">{{inputdepName}}
                                     </div>
                                 </el-popover>
@@ -430,7 +433,7 @@
                         </el-col>
                         <el-col :span=8>
                             <el-form-item label="婚姻状况:" prop="wedlock">
-                                <el-radio-group style="margin-top: 10px">
+                                <el-radio-group v-model="emp.wedlock" style="margin-top: 10px">
                                     <el-radio label="已婚">已婚</el-radio>
                                     <el-radio label="未婚">未婚</el-radio>
                                     <el-radio label="离异">离异</el-radio>
@@ -442,7 +445,7 @@
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="addEmp">确 定</el-button>
+                <el-button type="primary" @click="addOrEditEmp">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -453,6 +456,7 @@
         name: "Empbasic",
         data() {
             return {
+                title: '',
                 defaultProps: {
                     children: 'children',
                     label: 'name'
@@ -469,6 +473,7 @@
                 visible: false,
                 dialogVisible: false,
                 emp: {
+                    id: null,
                     name: '',
                     gender: '',
                     birthday: '',
@@ -488,7 +493,7 @@
                     specialty: '',
                     school: '',
                     beginDate: '',
-                    workState: '',
+                    workState: '在职',
                     workID: '',
                     contractTerm: null,
                     conversionTime: '',
@@ -498,35 +503,46 @@
                     workAge: null,
                     salaryId: null
                 },
-                rules:{
-                    name:[{required: true,message:'请输入员工姓名',tragger:'blur'}],
-                    gender:[{required: true,message:'请选择性别',tragger:'blur'}],
-                    birthday:[{required: true,message:'请输入出生日期',tragger:'blur'}],
-                    idCard:[{required: true,message:'请输入身份证号',tragger:'blur'}],
-                    wedlock:[{required: true,message:'请输入婚姻状况',tragger:'blur'}],
-                    nationId:[{required: true,message:'请输入民族',tragger:'blur'}],
-                    nativePlace:[{required: true,message:'请输入籍贯',tragger:'blur'}],
-                    politicId:[{required: true,message:'请输入政治面貌',tragger:'blur'}],
-                    email:[{required: true,message:'请输入邮箱地址',tragger:'blur'}],
-                    phone:[{required: true,message:'请输入员工电话',tragger:'blur'}],
-                    address:[{required: true,message:'请输入联系地址',tragger:'blur'}],
-                    departmentId:[{required: true,message:'请输入部门名称',tragger:'blur'}],
-                    jobLevelId:[{required: true,message:'请输入职称',tragger:'blur'}],
-                    posId:[{required: true,message:'请输入员工姓名',tragger:'blur'}],
-                    engageForm: [{required: true,message:'请输入毕业院校',tragger:'blur'}],
-                    tiptopDegree: [{required: true,message:'请输入最高学历',tragger:'blur'}],
-                    specialty: [{required: true,message:'请输入专业名称',tragger:'blur'}],
-                    school: [{required: true,message:'请输入毕业院校',tragger:'blur'}],
-                    beginDate: [{required: true,message:'请输入转正日期',tragger:'blur'}],
-                    workState: [{required: true,message:'请输入员工姓名',tragger:'blur'}],
-                    workID: [{required: true,message:'请输入员工姓名',tragger:'blur'}],
-                    contractTerm:[{required: true,message:'请输入员工姓名',tragger:'blur'}],
-                    conversionTime: [{required: true,message:'请输入员工姓名',tragger:'blur'}],
-                    notWorkDate: [{required: true,message:'请输入员工姓名',tragger:'blur'}],
-                    beginContract: [{required: true,message:'请输入合同起始日期',tragger:'blur'}],
-                    endContract: [{required: true,message:'请输入合同终止日期',tragger:'blur'}],
-                    workAge: [{required: true,message:'请输入员工姓名',tragger:'blur'}],
-                    salaryId: [{required: true,message:'请输入员工姓名',tragger:'blur'}],
+                rules: {
+                    name: [{required: true, message: '请输入员工姓名', tragger: 'blur'}],
+                    gender: [{required: true, message: '请选择性别', tragger: 'blur'}],
+                    birthday: [{required: true, message: '请输入出生日期', tragger: 'blur'}],
+                    idCard: [{
+                        required: true,
+                        message: '请输入身份证号',
+                        tragger: 'blur'
+                    }, {
+                        pattern: /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/,
+                        message: '身份证号码不正确',
+                        tragger: 'blur'
+                    }],
+                    wedlock: [{required: true, message: '请输入婚姻状况', tragger: 'blur'}],
+                    nationId: [{required: true, message: '请输入民族', tragger: 'blur'}],
+                    nativePlace: [{required: true, message: '请输入籍贯', tragger: 'blur'}],
+                    politicId: [{required: true, message: '请输入政治面貌', tragger: 'blur'}],
+                    email: [{required: true, message: '请输入邮箱地址', tragger: 'blur'}, {
+                        type: 'email',
+                        message: '邮箱格式不正确',
+                        tragger: 'blur'
+                    }],
+                    phone: [{required: true, message: '请输入员工电话', tragger: 'blur'}],
+                    address: [{required: true, message: '请输入联系地址', tragger: 'blur'}],
+                    departmentId: [{required: true, message: '请输入部门名称', tragger: 'blur'}],
+                    jobLevelId: [{required: true, message: '请输入职称', tragger: 'blur'}],
+                    posId: [{required: true, message: '请输入职位', tragger: 'blur'}],
+                    engageForm: [{required: true, message: '请输入毕业院校', tragger: 'blur'}],
+                    tiptopDegree: [{required: true, message: '请输入最高学历', tragger: 'blur'}],
+                    specialty: [{required: true, message: '请输入专业名称', tragger: 'blur'}],
+                    school: [{required: true, message: '请输入毕业院校', tragger: 'blur'}],
+                    beginDate: [{required: true, message: '请输入入职日期', tragger: 'blur'}],
+                    workState: [{required: true, message: '请输入工作状态', tragger: 'blur'}],
+                    workID: [{required: true, message: '请输入工号', tragger: 'blur'}],
+                    contractTerm: [{required: true, message: '请输入合同期限', tragger: 'blur'}],
+                    conversionTime: [{required: true, message: '请输入转正日期', tragger: 'blur'}],
+                    notWorkDate: [{required: true, message: '请输入离职日期', tragger: 'blur'}],
+                    beginContract: [{required: true, message: '请输入合同起始日期', tragger: 'blur'}],
+                    endContract: [{required: true, message: '请输入合同终止日期', tragger: 'blur'}],
+                    workAge: [{required: true, message: '请输入工龄', tragger: 'blur'}],
                 },
                 empName: '',
                 currentPage: 1,
@@ -540,19 +556,29 @@
             this.initData()
         },
         methods: {
-            addEmp() {
-                this.$refs.empForm.validate((valid)=>{
-                    if(valid){
+            addOrEditEmp() {
+                this.$refs.empForm.validate((valid) => {
+                    if (valid) {
                         this.postRequest('/employee/basic/', this.emp).then(resp => {
                             if (resp) {
                                 this.dialogVisible = false;
                                 this.initEmps()
                             }
                         })
-                    }else{
-                        this.$message.error("请输入所有字段");
-                        return false;
                     }
+                })
+            },
+            delEmp(data) {
+                this.$confirm('此操作将永久删除员工[' + data.name + '],是否继续？', '提示', {
+                    confirmButtonClass: '确定',
+                    cancelButtonClass: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.deleteRequest('/employee/basic/' + data.id).then(resp => {
+                        if (resp) {
+                            this.initEmps();
+                        }
+                    })
                 })
             },
             handleNodeClick(data) {
@@ -623,8 +649,49 @@
                     }
                 })
             },
-            //弹出框
-            showDiglog() {
+            showEditEmpView(data) {
+                this.title = '编辑员工信息';
+                this.emp = data;
+                console.log(this.emp);
+                this.inputdepName = data.department.name;
+                this.initPositions();
+                this.dialogVisible = true
+            },
+            //弹出添加员工框
+            showEmpView() {
+                this.title = '添加员工';
+                this.inputdepName = '';
+                this.emp = {
+                    id: null,
+                    name: '',
+                    gender: '',
+                    birthday: '',
+                    idCard: '',
+                    wedlock: '',
+                    nationId: null,
+                    nativePlace: '',
+                    politicId: null,
+                    email: '',
+                    phone: '',
+                    address: '',
+                    departmentId: null,
+                    jobLevelId: null,
+                    posId: null,
+                    engageForm: '',
+                    tiptopDegree: '',
+                    specialty: '',
+                    school: '',
+                    beginDate: '',
+                    workState: '在职',
+                    workID: '',
+                    contractTerm: null,
+                    conversionTime: '',
+                    notWorkDate: null,
+                    beginContract: '',
+                    endContract: '',
+                    workAge: null,
+                    salaryId: null
+                };
                 this.getWorkId();
                 this.initPositions();
                 this.dialogVisible = true
