@@ -530,7 +530,7 @@
                     departmentId: [{required: true, message: '请输入部门名称', tragger: 'blur'}],
                     jobLevelId: [{required: true, message: '请输入职称', tragger: 'blur'}],
                     posId: [{required: true, message: '请输入职位', tragger: 'blur'}],
-                    engageForm: [{required: true, message: '请输入毕业院校', tragger: 'blur'}],
+                    engageForm: [{required: true, message: '请选择聘用形式', tragger: 'blur'}],
                     tiptopDegree: [{required: true, message: '请输入最高学历', tragger: 'blur'}],
                     specialty: [{required: true, message: '请输入专业名称', tragger: 'blur'}],
                     school: [{required: true, message: '请输入毕业院校', tragger: 'blur'}],
