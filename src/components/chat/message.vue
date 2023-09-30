@@ -1,18 +1,17 @@
 <template>
-    <div id="message" v-scroll-bottom="session">
-		<template v-for="item in sessions">
-			<ul v-if="currentSessionId==item.id" :key="item">
-				<li v-for="entry in item.messages" :key="entry">
+    <div id="message" v-scroll-bottom="sessions">
+			<ul v-if="currentSession">
+				<li v-for="entry in sessions[user.username+'#'+currentSession.username]" :key="entry">
 					<p class="time">
 						<span>{{entry.date | time}}</span>
 					</p>
+
 					<div class="main" :class="{self:entry.self}">
-						<img class="avatar" :src="entry.self ? img : item.user.img" alt="">
+						<img class="avatar" :src="entry.self ? user.userFace : currentSession.userFace" alt="">
 						<p class="text">{{entry.content}}</p>
 					</div>
 				</li>
 			</ul>
-		</template>
     </div>
 </template>
 
@@ -23,12 +22,13 @@
         name: 'message',
         data() {
             return {
+				user:JSON.parse(window.sessionStorage.getItem('user')),
                 img: 'https://img1.baidu.com/it/u=3486651663,3991438881&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500'
             }
         },
         computed: mapState([
             'sessions',
-            'currentSessionId'
+            'currentSession'
         ]),
         filters: {
             time(date) {

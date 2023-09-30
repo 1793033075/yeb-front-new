@@ -1,68 +1,81 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import {getRequest} from "../utils/api";
+import SockJS from 'sockjs-client'
+import Stomp from 'stompjs'
 
 Vue.use(Vuex);
 
-const now = new Date();
+// const now = new Date();
 
 const store = new Vuex.Store({
     state: {
         routes: [],
-        sessions: [{
-            id: 1,
-            user: {
-                name: '示例介绍1',
-                img: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fblog%2F202106%2F22%2F20210622140718_0b391.thumb.1000_0.jpg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1678332058&t=00f102b5d5696341611ec2a65639fe9e'
-            },
-            messages: [{
-                content: 'Hello，这是一个基于Vue + Vuex + Webpack构建的简单chat示例，聊天记录保存在localStorge, 有什么问题可以通过Github Issue问我。',
-                date: now
-            }, {
-                content: '项目地址(原作者): https://github.com/coffcer/vue-chat',
-                date: now
-            }, {
-                content: '本项目地址(重构): https://github.com/is-liyiwei',
-                date: now
-            }]
-        }, {
-            id: 2,
-            user: {
-                name: 'webpack2',
-                img: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fc-ssl.duitang.com%2Fuploads%2Fblog%2F202106%2F22%2F20210622140718_0b391.thumb.1000_0.jpg&refer=http%3A%2F%2Fc-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1678332058&t=00f102b5d5696341611ec2a65639fe9e'
-            },
-            messages: [{
-                content: 'Hi，我是webpack哦',
-                date: now
-            }]
-        }],
-        currentSessionId: 1,
-        filterKey: ''
+        admins:[],
+        currentAdmin:JSON.parse(window.sessionStorage.getItem('user')),
+        sessions: {},
+        currentSession: null,
+        filterKey: '',
+        stomp:null
     },
     mutations: {
         initRoutes(state, data) {
             state.routes = data;
         },
-        changeCurrentSessionId(state, id) {
-            state.currentSessionId = id;
+        changeCurrentSession(state, currentSession) {
+            state.currentSession = currentSession;
         },
         addMessage(state, msg) {
-            state.sessions[state.currentSessionId - 1].messages.push({
-                content: msg,
+            // alert(JSON.stringify(msg));
+            let mss=state.sessions[state.currentSession.username+'#'+msg.to];
+            if(!mss){
+                state.sessions[state.currentSession.username+'#'+msg.to]=[];
+                // Vue.set(state.sessions,state.currentSession.username+'#'+msg.to,[]);
+            }
+            state.sessions[state.currentSession.username+'#'+msg.to].push({
+                content: msg.content,
                 date: new Date(),
-                self: true
+                self: !msg.notSelf
             })
         },
-        INIT_DATA(state) {
-            let data = localStorage.getItem('vue-chat-session');
-            //console.log(data)
-            if (data) {
-                state.sessions = JSON.parse(data);
-            }
+        // INIT_DATA(state) {
+        //     //浏览器本地聊天记录
+        //     // let data = localStorage.getItem('vue-chat-session');
+        //     // //console.log(data)
+        //     // if (data) {
+        //     //     state.sessions = JSON.parse(data);
+        //     // }
+        // },
+        INIT_ADMINS(state,data){
+            state.admins= data;
         }
     },
     actions: {
+        connect(context){
+            context.state.stomp=Stomp.over(new SockJS('/ws/ep'));
+            let token=window.sessionStorage.getItem('tokenStr')
+            // eslint-disable-next-line no-unused-vars
+            context.state.stomp.connect({'Auth-Token':token},success =>{
+                context.state.stomp.subscribe('/user/queue/chat',msg=>{
+                    let receiveMsg=JSON.parse(msg.body);
+                    receiveMsg.notSelf=true;
+                    receiveMsg.to=receiveMsg.from;
+                    context.commit('addMessage',receiveMsg);
+                    console.log(msg.body)
+                })
+                // eslint-disable-next-line no-unused-vars
+            },error=>{
+                console.log('失败')
+            })
+
+        },
         initData(context) {
-            context.commit('INIT_DATA')
+            getRequest('/chat/admin').then(resp=>{
+                if(resp){
+                    // alert(JSON.stringify(resp));
+                    context.commit('INIT_ADMINS',resp)
+                }
+            })
         }
     },
 
